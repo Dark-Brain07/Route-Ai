@@ -74,7 +74,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-[#2EE56B] relative w-full h-full">
+    <div className="flex flex-col flex-1 bg-[#2EE56B] relative w-full min-h-full">
       
       {/* Top Green Header Section */}
       <div className="px-6 pt-12 pb-6 flex justify-between items-center text-[#0A1C12]">
@@ -149,7 +149,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Play & Win -> Active Markets */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex flex-col mt-4">
           <div className="flex justify-between items-center mb-4 shrink-0">
             <h3 className="text-white font-bold text-sm">Active Markets</h3>
             <span className="text-[10px] text-[#2EE56B] font-semibold flex items-center gap-1"><Globe className="w-3 h-3"/> Live Data</span>
