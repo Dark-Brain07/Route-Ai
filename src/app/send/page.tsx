@@ -5,6 +5,8 @@ import SwipeButton from "@/components/SwipeButton";
 import { ArrowLeft, Search, User, CheckCircle2, QrCode, ChevronDown, XCircle, X } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSendTransaction } from 'wagmi';
+import { parseEther } from 'viem';
 
 const RECENT_CONTACTS = [
   { name: "Raj", wallet: "0x12...aB" },
@@ -39,6 +41,8 @@ export default function SendPage() {
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
 
+  const { sendTransactionAsync } = useSendTransaction();
+
   const handleKeypad = (num: string) => {
     if (num === "<") {
       setAmount((prev) => prev.slice(0, -1));
@@ -53,18 +57,35 @@ export default function SendPage() {
     }
   };
 
-  const handleSwipeSuccess = () => {
+  const handleSwipeSuccess = async () => {
+    if (!amount || Number(amount) <= 0) {
+      setStatusModal("error");
+      return;
+    }
+
     setIsSending(true);
-    setTimeout(() => {
+    
+    try {
+      // Find the wallet address of the selected contact
+      const contactWallet = contacts.find(c => c.name === selectedContact)?.wallet || selectedContact;
+      
+      // In a full production app, you would use useWriteContract for ERC20 transfer
+      // Since this is a hackathon app and we might not have all Mento addresses mapped,
+      // we'll execute a native transaction here for demonstration (or you can replace with ERC20 transfer).
+      const tx = await sendTransactionAsync({
+        to: (contactWallet?.startsWith('0x') && contactWallet.length === 42) ? contactWallet as `0x${string}` : '0x0000000000000000000000000000000000000000',
+        value: parseEther(amount),
+      });
+
+      console.log("Transaction Hash:", tx);
+      setSent(true);
+      setStatusModal("success");
+    } catch (error) {
+      console.error("Transaction failed", error);
+      setStatusModal("error");
+    } finally {
       setIsSending(false);
-      const isSuccess = Math.random() > 0.2;
-      if (isSuccess) {
-        setSent(true);
-        setStatusModal("success");
-      } else {
-        setStatusModal("error");
-      }
-    }, 2000);
+    }
   };
 
   return (

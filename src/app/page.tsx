@@ -4,7 +4,7 @@ import { Wallet, ArrowRightLeft, Settings, History, Activity, Zap, Cpu, ChevronD
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
 import Logo from "@/components/Logo";
 
 const MARKET_COINS = [
@@ -21,6 +21,14 @@ const MARKET_COINS = [
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
+  const { connectors, connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  
+  // Fetch CELO balance
+  const { data: balanceData } = useBalance({
+    address: address,
+  });
+
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
   const [marketData, setMarketData] = useState<any>(null);
 
@@ -92,11 +100,28 @@ export default function DashboardPage() {
         {/* Wallet Circle Graphic */}
         <div className="flex items-center gap-6 mb-10 mt-4">
           <div className="w-24 h-24 rounded-full border-4 border-[#2EE56B] border-dashed flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(46,229,107,0.3)] bg-black/20">
-             <span className="text-2xl font-black text-white">$4.2K</span>
+             <span className="text-xl font-black text-white">
+                {isConnected && balanceData ? `${parseFloat(balanceData.formatted).toFixed(4)}` : "$0.00"}
+             </span>
+             {isConnected && balanceData && (
+                <span className="text-[10px] text-white/70 font-bold -mt-1">{balanceData.symbol}</span>
+             )}
           </div>
           <div>
             <h2 className="text-white font-bold text-lg mb-1">Total in Wallet</h2>
-            <button className="text-[#2EE56B] text-xs font-bold">Fund Agent Now</button>
+            {!isConnected ? (
+              <button 
+                onClick={() => connect({ connector: connectors[0] })}
+                className="text-[#2EE56B] text-xs font-bold hover:text-white transition-colors"
+              >
+                Connect Wallet
+              </button>
+            ) : (
+              <div className="flex gap-3">
+                <button className="text-[#2EE56B] text-xs font-bold hover:text-white transition-colors">Fund Agent Now</button>
+                <button onClick={() => disconnect()} className="text-red-400 text-xs font-bold hover:text-red-300 transition-colors">Disconnect</button>
+              </div>
+            )}
           </div>
         </div>
 

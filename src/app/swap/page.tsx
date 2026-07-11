@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import SwipeButton from "@/components/SwipeButton";
 import { ChevronDown, CheckCircle2, Globe2, Cpu, Zap, Link as LinkIcon, ExternalLink, ArrowRightLeft, XCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSendTransaction } from 'wagmi';
+import { parseEther } from 'viem';
 
 import { ParaAgentWallet, x402Facilitator } from "@/utils";
 import Logo from "@/components/Logo";
@@ -32,6 +34,8 @@ export default function SwapPage() {
   const [pendingOrder, setPendingOrder] = useState(false);
   const [liveRates, setLiveRates] = useState<Record<string, number>>({});
   const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
+
+  const { sendTransactionAsync } = useSendTransaction();
 
   React.useEffect(() => {
     // Fetching real-world FX rates to proxy live on-chain Mento pegs
@@ -70,24 +74,34 @@ export default function SwapPage() {
   };
 
   const handleSwipeSuccess = async () => {
+    if (!amount || Number(amount) <= 0) return;
+
     setIsAgentCalculating(true);
     
-    if (isLimitOrder) {
-      await new Promise(r => setTimeout(r, 2000));
-      setIsAgentCalculating(false);
-      setPendingOrder(true);
-    } else {
-      await new Promise(r => setTimeout(r, 3000));
-      
-      const isSuccess = Math.random() > 0.2;
-      if (isSuccess) {
+    try {
+      // 1. x402 Micropayment execution
+      // Users must pay a small verification fee before the Agent routes the swap
+      const tx = await sendTransactionAsync({
+        to: '0x0000000000000000000000000000000000000000', // Burn address or Agent pool address
+        value: parseEther('0.05'), // 0.05 verification fee
+      });
+      console.log("x402 Payment TX:", tx);
+
+      // 2. Process Swap via Agent (mocked backend request)
+      if (isLimitOrder) {
+        await new Promise(r => setTimeout(r, 1000));
+        setIsAgentCalculating(false);
+        setPendingOrder(true);
+      } else {
+        await new Promise(r => setTimeout(r, 2000));
         setIsAgentCalculating(false);
         setSwapped(true);
         setStatusModal("success");
-      } else {
-        setIsAgentCalculating(false);
-        setStatusModal("error");
       }
+    } catch (error) {
+      console.error("Swap/x402 failed", error);
+      setIsAgentCalculating(false);
+      setStatusModal("error");
     }
   };
 
