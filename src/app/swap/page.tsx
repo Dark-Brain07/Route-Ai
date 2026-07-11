@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SwipeButton from "@/components/SwipeButton";
-import { ChevronDown, CheckCircle2, Globe2, Cpu, Zap, Link as LinkIcon, ExternalLink, ArrowRightLeft } from "lucide-react";
+import { ChevronDown, CheckCircle2, Globe2, Cpu, Zap, Link as LinkIcon, ExternalLink, ArrowRightLeft, XCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ParaAgentWallet, x402Facilitator } from "@/utils";
@@ -30,8 +30,8 @@ export default function SwapPage() {
   const [isLimitOrder, setIsLimitOrder] = useState(false);
   const [limitPrice, setLimitPrice] = useState("");
   const [pendingOrder, setPendingOrder] = useState(false);
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [liveRates, setLiveRates] = useState<Record<string, number>>({});
+  const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
 
   React.useEffect(() => {
     // Fetching real-world FX rates to proxy live on-chain Mento pegs
@@ -69,42 +69,88 @@ export default function SwapPage() {
     }
   };
 
-  const addLog = (msg: string) => {
-    setTerminalLogs(prev => [...prev, `[${new Date().toLocaleTimeString().split(" ")[0]}] ${msg}`]);
-  };
-
   const handleSwipeSuccess = async () => {
     setIsAgentCalculating(true);
-    setTerminalLogs([]);
-    
-    addLog(`Agent MPC Wallet initialized.`);
-    addLog(`x402 Micropayment (0.05 USDm) init...`);
-    
-    await new Promise(r => setTimeout(r, 800));
-    addLog("x402 Verified. Agent authorized.");
     
     if (isLimitOrder) {
-      addLog(`Monitoring blockchain for target: 1 ${sourceCurrency.symbol} = ${limitPrice || currentConversionRate} ${targetCurrency.symbol}`);
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, 2000));
       setIsAgentCalculating(false);
       setPendingOrder(true);
     } else {
-      addLog(`Finding optimal route to ${targetCurrency.symbol}...`);
-      await new Promise(r => setTimeout(r, 1000));
-      addLog(`Route locked. 1 ${sourceCurrency.symbol} = ${currentConversionRate} ${targetCurrency.symbol}`);
+      await new Promise(r => setTimeout(r, 3000));
       
-      addLog("Signing tx via Para Wallet...");
-      await new Promise(r => setTimeout(r, 1500));
-      
-      addLog("Success! Tags attached: Track 1 & 2");
-      setIsAgentCalculating(false);
-      setSwapped(true);
+      const isSuccess = Math.random() > 0.2;
+      if (isSuccess) {
+        setIsAgentCalculating(false);
+        setSwapped(true);
+        setStatusModal("success");
+      } else {
+        setIsAgentCalculating(false);
+        setStatusModal("error");
+      }
     }
   };
 
   return (
     <div className="flex flex-col h-full bg-[#2EE56B]">
       
+      {/* Status Modal Overlay */}
+      <AnimatePresence>
+        {statusModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-[#0E291A] border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col items-center max-w-xs w-full relative"
+            >
+              <button 
+                onClick={() => setStatusModal(null)}
+                className="absolute top-4 right-4 text-white/50 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {statusModal === "success" ? (
+                <>
+                  <motion.div 
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    className="w-20 h-20 bg-[#2EE56B]/20 rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(46,229,107,0.4)]"
+                  >
+                    <CheckCircle2 className="w-10 h-10 text-[#2EE56B]" />
+                  </motion.div>
+                  <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-white text-xl font-black mb-2">Success!</motion.h2>
+                  <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-white/60 text-sm text-center mb-6">Your transaction has been processed and confirmed.</motion.p>
+                  <motion.button 
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                    onClick={() => setStatusModal(null)}
+                    className="w-full bg-[#2EE56B] text-[#0A1C12] font-bold py-3 rounded-2xl hover:bg-[#25C45B] transition-colors"
+                  >
+                    Done
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
+                    <XCircle className="w-8 h-8 text-red-500" />
+                  </div>
+                  <h2 className="text-white text-xl font-black mb-2">Failed</h2>
+                  <p className="text-white/60 text-sm text-center mb-6">Something went wrong while processing your request.</p>
+                  <button 
+                    onClick={() => setStatusModal(null)}
+                    className="w-full bg-red-500 text-white font-bold py-3 rounded-2xl hover:bg-red-600 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="px-6 pt-12 pb-6 flex justify-between items-center text-[#0A1C12]">
         <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
@@ -241,34 +287,36 @@ export default function SwapPage() {
 
         {/* BOTTOM HALF: Terminal/Keypad */}
         <div className="flex-1 p-5 flex flex-col justify-between overflow-hidden">
-          {terminalLogs.length > 0 || isAgentCalculating || swapped || pendingOrder ? (
-            <div className="flex-1 flex flex-col font-mono relative overflow-hidden bg-white/5 rounded-3xl p-5 border border-white/5 mt-4">
-              <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-2">
-                <h3 className="text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                  <LinkIcon className="w-3 h-3" /> Agent Log
-                </h3>
-                <span className="text-[9px] bg-[#2EE56B]/20 text-[#2EE56B] border border-[#2EE56B]/30 px-2 py-0.5 rounded-full font-bold">
-                  x402 Active
-                </span>
+          {isAgentCalculating ? (
+            <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-black/20 rounded-3xl mt-4 border border-[#2EE56B]/20 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+              <div className="relative flex items-center justify-center w-24 h-24">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                  className="absolute w-24 h-24 border-[4px] border-transparent border-t-[#2EE56B] border-r-[#2EE56B] rounded-full shadow-[0_0_15px_rgba(46,229,107,0.4)]"
+                />
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                  className="absolute w-16 h-16 border-[4px] border-transparent border-b-[#2EE56B] border-l-[#2EE56B] rounded-full opacity-70"
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+                  className="w-6 h-6 bg-[#2EE56B] rounded-full shadow-[0_0_15px_rgba(46,229,107,0.8)]"
+                />
               </div>
-              
-              <div className="flex-1 overflow-y-auto flex flex-col gap-2">
-                {terminalLogs.map((log, i) => (
-                  <motion.div 
-                    key={i} 
-                    initial={{ opacity: 0, x: -5 }} 
-                    animate={{ opacity: 1, x: 0 }}
-                    className={`text-[11px] leading-tight ${log.includes("Success") || log.includes("optimal") ? "text-[#2EE56B] font-bold" : "text-white/70"}`}
-                  >
-                    {log}
-                  </motion.div>
-                ))}
-                {isAgentCalculating && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ repeat: Infinity, duration: 0.8 }} className="text-[#2EE56B] text-xs font-bold">
-                    _
-                  </motion.div>
-                )}
-              </div>
+              <motion.p 
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                className="text-[#2EE56B] font-black text-sm mt-8 uppercase tracking-[0.3em]"
+              >
+                Processing
+              </motion.p>
+            </div>
+          ) : swapped || pendingOrder ? (
+            <div className="flex-1 flex flex-col items-center justify-center bg-white/5 rounded-3xl mt-4 border border-white/5">
+                <p className="text-white/50 text-xs font-bold uppercase tracking-widest">{swapped ? "Swap Completed" : "Order Pending"}</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-y-2 gap-x-6 mt-auto mb-2 px-2">
@@ -318,7 +366,6 @@ export default function SwapPage() {
                   onClick={() => {
                     setPendingOrder(false);
                     setIsLimitOrder(false);
-                    addLog("Order Cancelled. Swapping at current market price...");
                   }}
                   className="px-4 bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white border border-red-500 transition-colors rounded-[20px] text-xs font-bold flex items-center justify-center"
                 >

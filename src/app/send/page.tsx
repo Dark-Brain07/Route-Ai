@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SwipeButton from "@/components/SwipeButton";
-import { ArrowLeft, Search, User, CheckCircle2, QrCode, ChevronDown } from "lucide-react";
+import { ArrowLeft, Search, User, CheckCircle2, QrCode, ChevronDown, XCircle, X } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -37,6 +37,7 @@ export default function SendPage() {
   
   const [selectedCurrency, setSelectedCurrency] = useState(MENTO_STABLES[0]);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
 
   const handleKeypad = (num: string) => {
     if (num === "<") {
@@ -56,13 +57,70 @@ export default function SendPage() {
     setIsSending(true);
     setTimeout(() => {
       setIsSending(false);
-      setSent(true);
+      const isSuccess = Math.random() > 0.2;
+      if (isSuccess) {
+        setSent(true);
+        setStatusModal("success");
+      } else {
+        setStatusModal("error");
+      }
     }, 2000);
   };
 
   return (
     <div className="flex flex-col h-full bg-[#2EE56B]">
       
+      {/* Status Modal Overlay */}
+      <AnimatePresence>
+        {statusModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-[#0E291A] border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col items-center max-w-xs w-full relative"
+            >
+              <button 
+                onClick={() => setStatusModal(null)}
+                className="absolute top-4 right-4 text-white/50 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {statusModal === "success" ? (
+                <>
+                  <div className="w-16 h-16 bg-[#2EE56B]/20 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle2 className="w-8 h-8 text-[#2EE56B]" />
+                  </div>
+                  <h2 className="text-white text-xl font-black mb-2">Success!</h2>
+                  <p className="text-white/60 text-sm text-center mb-6">Your transaction has been processed and confirmed.</p>
+                  <button 
+                    onClick={() => setStatusModal(null)}
+                    className="w-full bg-[#2EE56B] text-[#0A1C12] font-bold py-3 rounded-2xl hover:bg-[#25C45B] transition-colors"
+                  >
+                    Done
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
+                    <XCircle className="w-8 h-8 text-red-500" />
+                  </div>
+                  <h2 className="text-white text-xl font-black mb-2">Failed</h2>
+                  <p className="text-white/60 text-sm text-center mb-6">Something went wrong while processing your request.</p>
+                  <button 
+                    onClick={() => setStatusModal(null)}
+                    className="w-full bg-red-500 text-white font-bold py-3 rounded-2xl hover:bg-red-600 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="px-6 pt-12 pb-6 flex items-center justify-between gap-3 text-[#0A1C12]">
         <Link href="/" className="w-10 h-10 shrink-0 rounded-full bg-black/10 border border-black/20 flex items-center justify-center transition-colors">
