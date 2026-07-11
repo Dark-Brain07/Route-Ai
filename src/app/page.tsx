@@ -74,7 +74,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#2EE56B] relative">
+    <div className="flex flex-col flex-1 bg-[#2EE56B] relative w-full h-full">
       
       {/* Top Green Header Section */}
       <div className="px-6 pt-12 pb-6 flex justify-between items-center text-[#0A1C12]">

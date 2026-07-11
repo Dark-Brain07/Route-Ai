@@ -126,7 +126,7 @@ export default function SwapPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#2EE56B]">
+    <div className="flex flex-col flex-1 bg-[#2EE56B] w-full h-full">
       
       {/* Status Modal Overlay */}
       <AnimatePresence>
