@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http, useConnect } from 'wagmi';
+import { WagmiProvider, createConfig, http, useConnect, useAccount } from 'wagmi';
 import { celo, celoAlfajores } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 import { ReactNode, useEffect } from 'react';
@@ -21,14 +21,18 @@ export const config = createConfig({
 
 function AutoConnect({ children }: { children: ReactNode }) {
   const { connect, connectors } = useConnect();
+  const { isConnected } = useAccount();
   
   useEffect(() => {
-    // Automatically connect to the injected provider (MiniPay)
-    const injectedConnector = connectors.find((c) => c.type === 'injected');
-    if (injectedConnector) {
-      connect({ connector: injectedConnector });
+    // Only attempt to auto-connect if we aren't already connected
+    if (!isConnected && typeof window !== 'undefined' && window.ethereum) {
+      // Find the injected provider (which MiniPay uses)
+      const injectedConnector = connectors.find((c) => c.id === 'injected' || c.type === 'injected');
+      if (injectedConnector) {
+        connect({ connector: injectedConnector });
+      }
     }
-  }, [connect, connectors]);
+  }, [connect, connectors, isConnected]);
 
   return <>{children}</>;
 }
