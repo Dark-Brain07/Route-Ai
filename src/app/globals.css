@@ -11,11 +11,19 @@
   --background: #2EE56B;
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: fixed;
+}
+
 body {
   background: var(--background);
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  /* Prevent bounce and overscroll which crops content */
+  overscroll-behavior-y: none;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

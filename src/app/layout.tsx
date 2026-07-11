@@ -16,9 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased font-sans text-white bg-[#2EE56B] sm:bg-gray-100 flex items-start sm:items-center justify-center min-h-[100dvh]">
+      <body className="antialiased font-sans text-white bg-[#2EE56B] sm:bg-gray-100 flex items-start sm:items-center justify-center h-full w-full">
         <Providers>
-          <div className="w-full min-h-[100dvh] sm:h-[850px] sm:min-h-0 sm:max-w-[400px] sm:rounded-[40px] sm:shadow-2xl relative flex flex-col overflow-hidden bg-[#2EE56B]">
+          <div className="w-full h-full sm:h-[850px] sm:max-w-[400px] sm:rounded-[40px] sm:shadow-2xl relative flex flex-col overflow-hidden bg-[#2EE56B]">
             <main className="flex-1 overflow-y-auto no-scrollbar relative z-10 pb-24 flex flex-col">
               {children}
             </main>
