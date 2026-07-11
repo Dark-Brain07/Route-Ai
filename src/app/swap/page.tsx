@@ -88,11 +88,13 @@ export default function SwapPage() {
       console.log("x402 Payment TX:", tx);
 
       // 2. Process Swap via Agent Backend API
-      const res = await fetch("/api/agent/execute", {
+      const res = await fetch("/api/agent", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `x402 ${tx}`
+        },
         body: JSON.stringify({
-          txHash: tx,
           amount,
           targetCurrency: targetCurrency.symbol,
           isLimitOrder,

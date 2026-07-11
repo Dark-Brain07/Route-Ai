@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
+import { formatUnits } from 'viem';
 import Logo from "@/components/Logo";
 
 const MARKET_COINS = [
@@ -101,7 +102,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-6 mb-10 mt-4">
           <div className="w-24 h-24 rounded-full border-4 border-[#2EE56B] border-dashed flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(46,229,107,0.3)] bg-black/20">
              <span className="text-xl font-black text-white">
-                {isConnected && balanceData ? `${parseFloat(balanceData.formatted).toFixed(4)}` : "$0.00"}
+                {isConnected && balanceData ? `${parseFloat(formatUnits(balanceData.value, balanceData.decimals)).toFixed(4)}` : "$0.00"}
              </span>
              {isConnected && balanceData && (
                 <span className="text-[10px] text-white/70 font-bold -mt-1">{balanceData.symbol}</span>

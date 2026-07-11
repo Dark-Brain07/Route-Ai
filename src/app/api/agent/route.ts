@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
        // We use custom transport so Para can intercept and sign the RPC calls via MPC
        const paraWalletClient = createWalletClient({
          chain: celo,
-         transport: custom(para.getProvider())
+         transport: custom((para as any).getProvider())
        });
 
        // 5.b Formulate the real on-chain transaction (Mento Broker Execution)
