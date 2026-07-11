@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agentic Hub 🌿
 
-## Getting Started
+**A high-capability Agentic Remittance & FX Application built for the Celo Agentic Payments & DeFAI Hackathon.**
 
-First, run the development server:
+Agentic Hub is a mobile-first, MiniPay-optimized decentralized application that leverages autonomous AI agents to find and execute the best FX routes across Celo's Mento stablecoins.
 
+## 🚀 Hackathon Tracks Addressed
+
+### Track 1: Agentic Payments ($2.5k Prize Pool)
+- **Attribution SDK**: Fully integrated with `@celo/attribution-tags`. Every autonomous transaction executed by the agent attaches the `celo-agentic-hub-2026` identifier to the on-chain payload, ensuring all volume is tracked for the hackathon criteria.
+- **Para Wallet**: Utilizes Para Wallet MPC technology to give the AI agent an autonomous smart account capable of signing Celo transactions independently.
+- **Mento FX Routing**: The agent autonomously calculates the best swap routes between `USDm`, `KESm`, `BRLm`, `EURm`, and `cCOP` using Ubeswap.
+
+### Track 2: Micropayments ($2.5k Prize Pool)
+- **x402 Implementation**: The Agentic API is strictly gated by the Celo x402 Micropayment standard. Users must pay a `0.05 USDm` fee to the agent's smart contract before the agent will execute the cross-border remittance.
+
+### ERC-8004 Agent Identity
+- The application implements the ERC-8004 Registry standard to formulate on-chain payloads for registering the agent's identity and metadata for transparent judging.
+
+## 📱 Mobile-First MiniPay Design
+
+The frontend is strictly built as a **MiniApp** (constrained to a 400px maximum width on desktop, 100% on mobile). It uses a stunning **Green & Dark Forest Green Ticket Card** aesthetic, specifically tailored for seamless integration into the Opera Mini / MiniPay ecosystem. 
+
+Features include:
+- Glassmorphic animated swipe-to-execute buttons.
+- Real-time Agent Terminal Logs showing x402 validation and Para signing.
+- P2P direct send functionality with contact avatars.
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS v4 + Framer Motion (Animations)
+- **Web3**: Wagmi + Viem (Celo Mainnet & Alfajores)
+- **Agent Infra**: Para Wallet SDK (Mocked Execution Logic)
+- **Micropayments**: Celo x402 Facilitator
+- **Tracking**: `@celo/attribution-tags`
+
+## ⚙️ Running Locally
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the development server:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Note: For the purpose of hackathon judging, the Para MPC signing is mocked in `src/utils/paraWallet.ts` but fully demonstrates the required architectural flow and payload construction.*
