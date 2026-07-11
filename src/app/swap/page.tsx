@@ -87,13 +87,31 @@ export default function SwapPage() {
       });
       console.log("x402 Payment TX:", tx);
 
-      // 2. Process Swap via Agent (mocked backend request)
+      // 2. Process Swap via Agent Backend API
+      const res = await fetch("/api/agent/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          txHash: tx,
+          amount,
+          targetCurrency: targetCurrency.symbol,
+          isLimitOrder,
+          limitPrice
+        })
+      });
+
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Agent execution failed");
+      }
+
+      console.log("Agent Response:", data);
+
       if (isLimitOrder) {
-        await new Promise(r => setTimeout(r, 1000));
         setIsAgentCalculating(false);
         setPendingOrder(true);
       } else {
-        await new Promise(r => setTimeout(r, 2000));
         setIsAgentCalculating(false);
         setSwapped(true);
         setStatusModal("success");
