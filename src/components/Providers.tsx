@@ -25,7 +25,7 @@ function AutoConnect({ children }: { children: ReactNode }) {
   
   useEffect(() => {
     // Only attempt to auto-connect if we aren't already connected
-    if (!isConnected && typeof window !== 'undefined' && window.ethereum) {
+    if (!isConnected && typeof window !== 'undefined' && (window as any).ethereum) {
       // Find the injected provider (which MiniPay uses)
       const injectedConnector = connectors.find((c) => c.id === 'injected' || c.type === 'injected');
       if (injectedConnector) {
