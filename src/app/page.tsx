@@ -2,7 +2,7 @@
 
 import { Wallet, ArrowRightLeft, Settings, History, Activity, Zap, Cpu, ChevronDown, Send, Bell, X, TrendingUp, BarChart2, Globe } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
 import { formatUnits } from 'viem';
@@ -25,6 +25,40 @@ export default function DashboardPage() {
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   
+  // Drag to scroll refs
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+  const hasDragged = useRef(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    isDragging.current = true;
+    hasDragged.current = false;
+    startX.current = e.pageX - scrollRef.current.offsetLeft;
+    scrollLeft.current = scrollRef.current.scrollLeft;
+  };
+
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX.current) * 2; // scroll speed multiplier
+    if (Math.abs(x - startX.current) > 5) {
+      hasDragged.current = true;
+    }
+    scrollRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
   // Fetch CELO balance
   const { data: balanceData } = useBalance({
     address: address,
@@ -34,6 +68,7 @@ export default function DashboardPage() {
   const [marketData, setMarketData] = useState<any>(null);
 
   const openMarket = async (coin: any) => {
+    if (hasDragged.current) return;
     setSelectedMarket(coin);
     setMarketData(null);
     
@@ -156,7 +191,14 @@ export default function DashboardPage() {
           </div>
           
           <div className="relative">
-            <div className="flex gap-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div 
+              ref={scrollRef}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              className="flex gap-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] cursor-grab active:cursor-grabbing select-none"
+            >
                {MARKET_COINS.map((coin, idx) => (
                  <button 
                    key={idx} 
