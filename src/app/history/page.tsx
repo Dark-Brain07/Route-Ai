@@ -13,7 +13,7 @@ export default function HistoryPage() {
         </h1>
       </div>
 
-      <div className="flex-1 bg-[#0E291A] rounded-t-[40px] rounded-b-[40px] mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col relative overflow-hidden p-6 pb-20">
+      <div className="flex-1 bg-[#0E291A] rounded-t-[40px] rounded-b-[40px] mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col relative overflow-hidden p-6 pb-28">
         
         {/* Ticket Cutout Effects */}
         <div className="absolute top-20 -left-4 w-8 h-8 bg-[#2EE56B] rounded-full shadow-inner"></div>

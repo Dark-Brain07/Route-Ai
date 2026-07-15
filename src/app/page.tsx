@@ -77,7 +77,7 @@ export default function DashboardPage() {
     <div className="flex flex-col flex-1 bg-[#2EE56B] relative w-full min-h-full">
       
       {/* Top Green Header Section */}
-      <div className="px-6 pt-12 pb-6 flex justify-between items-center text-[#0A1C12]">
+      <div className="px-6 pt-4 pb-4 flex justify-between items-center text-[#0A1C12]">
         <div className="flex items-center gap-2">
            <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center border border-black/10 shadow-sm">
              <Logo className="w-6 h-6 text-[#0A1C12]" />
@@ -96,7 +96,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Dark Card (Ticket shape) */}
-      <div className="flex-1 bg-[#0E291A] rounded-t-[40px] p-6 rounded-b-[40px] relative mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col">
+      <div className="flex-1 bg-[#0E291A] rounded-t-[40px] p-6 pb-28 rounded-b-[40px] relative mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col">
         
         {/* Wallet Circle Graphic */}
         <div className="flex items-center gap-6 mb-10 mt-4">

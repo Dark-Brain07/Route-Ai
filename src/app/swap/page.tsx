@@ -320,7 +320,7 @@ export default function SwapPage() {
         </div>
 
         {/* BOTTOM HALF: Terminal/Keypad */}
-        <div className="flex-1 p-5 flex flex-col justify-between overflow-hidden">
+        <div className="flex-1 p-5 pb-28 flex flex-col justify-between overflow-hidden">
           {isAgentCalculating ? (
             <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-black/20 rounded-3xl mt-4 border border-[#2EE56B]/20 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
               <div className="relative flex items-center justify-center w-24 h-24">
