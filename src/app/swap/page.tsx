@@ -195,7 +195,7 @@ export default function SwapPage() {
         </div>
       </div>
 
-      <div className="flex-1 bg-[#0E291A] rounded-[40px] mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col relative overflow-hidden">
+      <div className="flex-1 bg-[#0E291A] rounded-[40px] mb-28 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col relative overflow-hidden">
         
         {/* Ticket Cutout Effects */}
         <div className="absolute top-1/2 -left-4 w-8 h-8 bg-[#2EE56B] rounded-full -translate-y-1/2 shadow-inner"></div>
@@ -320,7 +320,7 @@ export default function SwapPage() {
         </div>
 
         {/* BOTTOM HALF: Terminal/Keypad */}
-        <div className="flex-1 p-5 pb-28 flex flex-col justify-between overflow-hidden">
+        <div className="flex-1 p-5 flex flex-col justify-between overflow-hidden">
           {isAgentCalculating ? (
             <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-black/20 rounded-3xl mt-4 border border-[#2EE56B]/20 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
               <div className="relative flex items-center justify-center w-24 h-24">
