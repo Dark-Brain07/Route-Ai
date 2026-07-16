@@ -189,7 +189,7 @@ export default function SwapPage() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="px-6 pt-12 pb-6 flex justify-between items-center text-[#0A1C12]">
+      <div className="px-6 pt-6 pb-2 flex justify-between items-center text-[#0A1C12]">
         <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
           Route AI
         </h1>
@@ -206,10 +206,10 @@ export default function SwapPage() {
         <div className="absolute top-1/2 left-4 right-4 border-t-2 border-dashed border-white/10 -translate-y-1/2 pointer-events-none"></div>
 
         {/* TOP HALF: Inputs */}
-        <div className="p-4 sm:p-5 pb-2 flex-1 overflow-y-auto min-h-0 no-scrollbar">
+        <div className="p-4 sm:p-5 pb-1 flex-1 overflow-y-auto min-h-0 no-scrollbar">
           {/* Amount */}
-          <div className="text-center mt-2">
-            <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="text-center mt-0">
+            <div className="flex items-center justify-center gap-3 mb-2">
               {/* From Token */}
               <div className="flex items-center gap-2 bg-white/10 px-4 py-2.5 rounded-full border border-white/5">
                 <img src={sourceCurrency.flagUrl} alt={sourceCurrency.name} className="w-5 h-auto rounded-sm shadow-sm" />
@@ -263,7 +263,7 @@ export default function SwapPage() {
             </div>
 
 
-            <p className="text-[10px] font-bold text-[#2EE56B] uppercase tracking-widest mb-2">Swap Amount</p>
+            <p className="text-[10px] font-bold text-[#2EE56B] uppercase tracking-widest mb-0 mt-2">Swap Amount</p>
             <input 
               type="text"
               value={amount}
@@ -271,11 +271,11 @@ export default function SwapPage() {
                 const val = e.target.value.replace(/[^0-9.]/g, '');
                 setAmount(val);
               }}
-              className="text-4xl sm:text-5xl font-black text-white tracking-tight bg-transparent text-center w-full outline-none placeholder:text-white/30"
+              className="text-3xl sm:text-4xl font-black text-white tracking-tight bg-transparent text-center w-full outline-none placeholder:text-white/30"
               placeholder="0"
             />
             {amount && !isNaN(Number(amount)) && (
-              <p className="text-sm font-bold text-white/60 mt-3 flex items-center justify-center gap-1.5">
+              <p className="text-sm font-bold text-white/60 mt-0 flex items-center justify-center gap-1.5">
                 <span>≈</span>
                 <span className="text-[#2EE56B]">
                   {(Number(amount) * Number(isLimitOrder && limitPrice ? limitPrice : currentConversionRate)).toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -388,13 +388,13 @@ export default function SwapPage() {
                 <p className="text-white/50 text-xs font-bold uppercase tracking-widest">{swapped ? "Swap Completed" : "Order Pending"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-y-1 gap-x-6 mt-auto mb-2 px-2">
+            <div className="grid grid-cols-3 gap-y-0.5 gap-x-6 mt-auto mb-1 px-2">
               {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "<"].map(
                 (key, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleKeypad(key)}
-                    className="h-10 sm:h-12 flex items-center justify-center text-xl sm:text-2xl font-bold text-white bg-transparent hover:bg-white/10 rounded-2xl transition-colors"
+                    className="h-8 sm:h-10 flex items-center justify-center text-xl sm:text-2xl font-bold text-white bg-transparent hover:bg-white/10 rounded-2xl transition-colors"
                   >
                     {key === "<" ? (
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -411,7 +411,7 @@ export default function SwapPage() {
           )}
 
           {/* Action Button */}
-          <div className="mt-auto mb-4 h-14 shrink-0 min-h-[56px]">
+          <div className="mt-auto mb-2 h-12 shrink-0 min-h-[48px]">
             {swapped ? (
               <div className="w-full h-full border-2 border-[#2EE56B] bg-[#2EE56B]/20 rounded-[20px] flex items-center justify-between px-5">
                 <div className="flex items-center gap-2">
