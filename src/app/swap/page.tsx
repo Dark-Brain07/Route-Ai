@@ -198,7 +198,7 @@ export default function SwapPage() {
         </div>
       </div>
 
-      <div className="flex-1 bg-[#0E291A] rounded-[40px] mb-28 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col relative overflow-hidden">
+      <div className="flex-1 bg-[#0E291A] rounded-[40px] mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col relative overflow-hidden">
         
         {/* Ticket Cutout Effects */}
         <div className="absolute top-1/2 -left-4 w-8 h-8 bg-[#2EE56B] rounded-full -translate-y-1/2 shadow-inner"></div>

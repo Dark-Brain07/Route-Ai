@@ -131,7 +131,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Dark Card (Ticket shape) */}
-      <div className="flex-1 bg-[#0E291A] rounded-t-[40px] p-6 rounded-b-[40px] relative mb-28 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col">
+      <div className="flex-1 bg-[#0E291A] rounded-t-[40px] p-6 rounded-b-[40px] relative mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col">
         
         {/* Wallet Circle Graphic */}
         <div className="flex items-center gap-6 mb-10 mt-4">

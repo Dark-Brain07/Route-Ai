@@ -14,7 +14,7 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[80%] bg-[#2EE56B] rounded-[30px] px-3 py-2 flex justify-around items-center z-50 shadow-lg border-4 border-[#0E291A]">
+    <nav className="w-[85%] mx-auto bg-[#2EE56B] rounded-[30px] px-3 py-2 flex justify-around items-center z-50 shadow-[0_10px_30px_rgba(0,0,0,0.2)] border-4 border-[#0E291A]">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         const Icon = item.icon;
