@@ -134,7 +134,7 @@ export default function DashboardPage() {
       <div className="flex-1 bg-[#0E291A] rounded-t-[40px] p-6 rounded-b-[40px] relative mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col">
         
         {/* Wallet Circle Graphic */}
-        <div className="flex items-center gap-6 mb-10 mt-4">
+        <div className="flex items-center gap-6 mb-6 mt-2">
           <div className="w-24 h-24 rounded-full border-4 border-[#2EE56B] border-dashed flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(46,229,107,0.3)] bg-black/20">
              <span className="text-xl font-black text-white">
                 {isConnected && balanceData ? `${parseFloat(formatUnits(balanceData.value, balanceData.decimals)).toFixed(4)}` : "$0.00"}
@@ -162,7 +162,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Services Grid */}
-        <div className="mb-8">
+        <div className="mb-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-white font-bold text-sm">Services</h3>
           </div>
@@ -184,8 +184,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Play & Win -> Active Markets */}
-        <div className="flex flex-col mt-4">
-          <div className="flex justify-between items-center mb-4 shrink-0">
+        <div className="flex flex-col mt-2">
+          <div className="flex justify-between items-center mb-3 shrink-0">
             <h3 className="text-white font-bold text-sm">Active Markets</h3>
             <span className="text-[10px] text-[#2EE56B] font-semibold flex items-center gap-1"><Globe className="w-3 h-3"/> Live Data</span>
           </div>
