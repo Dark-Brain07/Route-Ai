@@ -32,6 +32,8 @@ export default function SwapPage() {
   const [isLimitOrder, setIsLimitOrder] = useState(false);
   const [limitPrice, setLimitPrice] = useState("");
   const [pendingOrder, setPendingOrder] = useState(false);
+  const [sendToSameWallet, setSendToSameWallet] = useState(true);
+  const [recipientWallet, setRecipientWallet] = useState("");
   const [liveRates, setLiveRates] = useState<Record<string, number>>({});
   const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
 
@@ -98,7 +100,8 @@ export default function SwapPage() {
           amount,
           targetCurrency: targetCurrency.symbol,
           isLimitOrder,
-          limitPrice
+          limitPrice,
+          recipientAddress: sendToSameWallet ? undefined : recipientWallet
         })
       });
 
@@ -203,7 +206,7 @@ export default function SwapPage() {
         <div className="absolute top-1/2 left-4 right-4 border-t-2 border-dashed border-white/10 -translate-y-1/2 pointer-events-none"></div>
 
         {/* TOP HALF: Inputs */}
-        <div className="p-5 pb-2">
+        <div className="p-4 sm:p-5 pb-2 flex-1 overflow-y-auto min-h-0 no-scrollbar">
           {/* Amount */}
           <div className="text-center mt-2">
             <div className="flex items-center justify-center gap-3 mb-6">
@@ -268,7 +271,7 @@ export default function SwapPage() {
                 const val = e.target.value.replace(/[^0-9.]/g, '');
                 setAmount(val);
               }}
-              className="text-5xl font-black text-white tracking-tight bg-transparent text-center w-full outline-none placeholder:text-white/30"
+              className="text-4xl sm:text-5xl font-black text-white tracking-tight bg-transparent text-center w-full outline-none placeholder:text-white/30"
               placeholder="0"
             />
             {amount && !isNaN(Number(amount)) && (
@@ -282,8 +285,8 @@ export default function SwapPage() {
             )}
 
             {/* Limit Order Toggle */}
-            <div className="mt-4 border-t border-white/5 pt-3">
-              <div className="flex items-center justify-between mb-2 px-2">
+            <div className="mt-2 border-t border-white/5 pt-2">
+              <div className="flex items-center justify-between mb-1 px-2">
                 <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Smart Limit Order</span>
                 <button 
                   onClick={() => { setIsLimitOrder(!isLimitOrder); setLimitPrice(currentConversionRate); }}
@@ -316,11 +319,43 @@ export default function SwapPage() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Receive in Same Wallet Toggle */}
+            <div className="mt-2 border-t border-white/5 pt-2">
+              <div className="flex items-center justify-between mb-1 px-2">
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Receive in same wallet</span>
+                <button 
+                  onClick={() => setSendToSameWallet(!sendToSameWallet)}
+                  className={`w-10 h-5 rounded-full relative transition-colors ${sendToSameWallet ? 'bg-[#2EE56B]' : 'bg-white/10'}`}
+                >
+                  <motion.div 
+                    animate={{ x: sendToSameWallet ? 20 : 2 }} 
+                    className="w-4 h-4 bg-white rounded-full absolute top-0.5" 
+                  />
+                </button>
+              </div>
+              
+              <AnimatePresence>
+                {!sendToSameWallet && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                    <div className="bg-black/20 rounded-xl p-3 flex items-center mt-2 border border-[#2EE56B]/20">
+                      <input 
+                        type="text" 
+                        value={recipientWallet} 
+                        onChange={(e) => setRecipientWallet(e.target.value)}
+                        placeholder="Recipient Wallet Address (0x...)"
+                        className="bg-transparent text-sm font-bold text-white outline-none w-full placeholder:text-white/30"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
         {/* BOTTOM HALF: Terminal/Keypad */}
-        <div className="flex-1 p-5 flex flex-col justify-between overflow-hidden">
+        <div className="shrink-0 p-4 sm:p-5 pt-2 flex flex-col justify-between">
           {isAgentCalculating ? (
             <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-black/20 rounded-3xl mt-4 border border-[#2EE56B]/20 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
               <div className="relative flex items-center justify-center w-24 h-24">
@@ -353,13 +388,13 @@ export default function SwapPage() {
                 <p className="text-white/50 text-xs font-bold uppercase tracking-widest">{swapped ? "Swap Completed" : "Order Pending"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-y-2 gap-x-6 mt-auto mb-2 px-2">
+            <div className="grid grid-cols-3 gap-y-1 gap-x-6 mt-auto mb-2 px-2">
               {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "<"].map(
                 (key, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleKeypad(key)}
-                    className="h-12 flex items-center justify-center text-2xl font-bold text-white bg-transparent hover:bg-white/10 rounded-2xl transition-colors"
+                    className="h-10 sm:h-12 flex items-center justify-center text-xl sm:text-2xl font-bold text-white bg-transparent hover:bg-white/10 rounded-2xl transition-colors"
                   >
                     {key === "<" ? (
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

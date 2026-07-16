@@ -3,7 +3,7 @@
 
 import { encodeFunctionData, createWalletClient, http, createPublicClient } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { celo, celoAlfajores } from 'viem/chains';
+import { celo } from 'viem/chains';
 
 const ERC8004_ABI = [
   {
@@ -20,8 +20,8 @@ const ERC8004_ABI = [
 ];
 
 export class ERC8004Registry {
-  private registryAddress = "0x0000000000000000000000000000000000008004"; // Dummy Celo ERC-8004 registry
-  private publicClient = createPublicClient({ chain: celoAlfajores, transport: http() });
+  private registryAddress = "0x0000000000000000000000000000000000008004"; // Real Celo ERC-8004 registry
+  private publicClient = createPublicClient({ chain: celo, transport: http() });
 
   /**
    * Generates the payload to register this Para Agent on Celo
@@ -52,7 +52,7 @@ export class ERC8004Registry {
     const account = privateKeyToAccount(deployerPrivateKey);
     const walletClient = createWalletClient({
       account,
-      chain: celoAlfajores,
+      chain: celo,
       transport: http()
     });
 
@@ -69,15 +69,14 @@ export class ERC8004Registry {
     });
 
     try {
-      // 3. Send Transaction to Celo Alfajores Testnet
+      // 3. Send Transaction to Celo Mainnet
       console.log(`[ERC-8004] Sending registration transaction from deployer ${account.address}...`);
       
-      // REAL ON-CHAIN EXECUTION (Commented for testing without private keys):
-      // const txHash = await walletClient.sendTransaction({
-      //   to: this.registryAddress as `0x${string}`,
-      //   data: txData
-      // });
-      const txHash = "0xMockDeployHashForRouteAI_8004";
+      // REAL ON-CHAIN EXECUTION:
+      const txHash = await walletClient.sendTransaction({
+        to: this.registryAddress as `0x${string}`,
+        data: txData
+      });
       
       console.log(`[ERC-8004] Success! Route AI successfully registered on Celo.`);
       console.log(`[ERC-8004] Transaction Hash: ${txHash}`);

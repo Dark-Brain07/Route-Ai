@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPublicClient, createWalletClient, custom, http, encodeFunctionData, parseUnits } from 'viem';
+import { createPublicClient, createWalletClient, custom, http, encodeFunctionData, parseUnits, parseAbiItem, decodeEventLog } from 'viem';
 import { celo } from 'viem/chains';
 import { Para } from '@getpara/server-sdk';
 
 // --- Mento Protocol Configuration ---
-const MENTO_BROKER_ADDRESS = "0x787Cb2F9A3e9444BDE64c8E619eF545fD2dfF8e2"; // Mock/Testnet Mento Broker Address
+const MENTO_BROKER_ADDRESS = "0xbf782C502b4d952671efbb2AF65c69EE03A27F6A"; // Real Mainnet Mento Broker Address
 const MENTO_BROKER_ABI = [
   {
     type: "function",
@@ -23,6 +23,7 @@ const MENTO_BROKER_ABI = [
 // --- x402 Micropayment Configuration ---
 const REQUIRED_FEE_USDM = 0.05; // The fee required to wake the Agent
 const AGENT_SMART_WALLET = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"; // Replace with real deployed Agent address
+const ERC20_TRANSFER_EVENT = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 
 // Initialize Viem Client to verify transactions on the Celo blockchain
 const publicClient = createPublicClient({
@@ -63,23 +64,35 @@ export async function POST(req: NextRequest) {
     // 3. Verify the transaction on Celo Mainnet
     let isPaymentValid = false;
     
-    // For the hackathon prototype, we accept "0xMockHash" to prevent local testing blockers,
-    // but in a production environment, we enforce strict Viem on-chain receipt verification.
-    if (txHash === "0xMockHash") {
-      isPaymentValid = true;
-    } else {
-      try {
-        const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
-        // Ensure the transaction didn't revert
-        if (receipt && receipt.status === "success") {
-          // TODO: In production, also decode logs to ensure it was an ERC20 Transfer
-          // of exactly 0.05 USDm to the AGENT_SMART_WALLET
-          isPaymentValid = true;
+    try {
+      const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
+      // Ensure the transaction didn't revert
+      if (receipt && receipt.status === "success") {
+        // Decode logs to ensure it was an ERC20 Transfer of exactly 0.05 USDm to the AGENT_SMART_WALLET
+        for (const log of receipt.logs) {
+          try {
+            const decoded = decodeEventLog({
+              abi: [ERC20_TRANSFER_EVENT],
+              data: log.data,
+              topics: log.topics,
+            });
+            if (decoded.eventName === 'Transfer') {
+              const toAddress = decoded.args.to;
+              const value = decoded.args.value;
+              // Check if payment reached the agent wallet and is exactly the required amount
+              if (toAddress?.toLowerCase() === AGENT_SMART_WALLET.toLowerCase() && value === parseUnits(REQUIRED_FEE_USDM.toString(), 18)) {
+                isPaymentValid = true;
+                break;
+              }
+            }
+          } catch (err) {
+            // Ignore logs that don't match the Transfer event signature
+          }
         }
-      } catch (e) {
-        console.error("Viem Verification Error:", e);
-        return NextResponse.json({ error: "Transaction not found on Celo or verification RPC failed." }, { status: 400 });
       }
+    } catch (e) {
+      console.error("Viem Verification Error:", e);
+      return NextResponse.json({ error: "Transaction not found on Celo or verification RPC failed." }, { status: 400 });
     }
 
     if (!isPaymentValid) {
@@ -125,16 +138,14 @@ export async function POST(req: NextRequest) {
        // 5.c Sign and broadcast via Para Wallet
        console.log("Para Wallet Agent: Requesting MPC signature...");
        
-       // REAL ON-CHAIN EXECUTION (Commented for testing without API keys):
-       // txHashOnChain = await paraWalletClient.sendTransaction({
-       //    to: MENTO_BROKER_ADDRESS,
-       //    value: 0n,
-       //    // CRITICAL: We safely append the Attribution Tag to the end of the calldata!
-       //    data: `${swapPayload}${attributionData.replace("0x", "")}` as `0x${string}`
-       // });
+       // REAL ON-CHAIN EXECUTION:
+       txHashOnChain = await paraWalletClient.sendTransaction({
+          to: MENTO_BROKER_ADDRESS as `0x${string}`,
+          value: 0n,
+          // CRITICAL: We safely append the Attribution Tag to the end of the calldata!
+          data: `${swapPayload}${attributionData.replace("0x", "")}` as `0x${string}`
+       });
        
-       // Note: Commented out the actual sendTransaction to avoid failing without real API keys during testing.
-       txHashOnChain = "0xRealParaMpcHashGenerated123";
        console.log(`Para Wallet Agent: Transaction broadcasted! Hash: ${txHashOnChain}`);
        
     } catch (e) {
