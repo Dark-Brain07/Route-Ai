@@ -90,11 +90,12 @@ export default function SwapPage() {
     setIsAgentCalculating(true);
     
     try {
-      // 1. x402 Micropayment execution
-      // Users must pay a small verification fee before the Agent routes the swap
+      // 1. x402 Micropayment / Delegation
+      // The user sends a tiny routing fee to the Agent Smart Wallet to authorize the autonomous swap
+      const AGENT_WALLET = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
       const tx = await sendTransactionAsync({
-        to: '0x0000000000000000000000000000000000000000', // Burn address or Agent pool address
-        value: parseEther('0.05'), // 0.05 verification fee
+        to: AGENT_WALLET,
+        value: parseEther('0.0001'), // Tiny fee to ensure it doesn't fail on insufficient funds during demo
       });
       console.log("x402 Payment TX:", tx);
 
