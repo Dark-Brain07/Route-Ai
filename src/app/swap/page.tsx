@@ -4,25 +4,26 @@ import React, { useState } from "react";
 import SwipeButton from "@/components/SwipeButton";
 import { ChevronDown, CheckCircle2, Globe2, Cpu, Zap, Link as LinkIcon, ExternalLink, ArrowRightLeft, XCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSendTransaction } from 'wagmi';
-import { parseEther } from 'viem';
+import { useSendTransaction, useAccount, useBalance } from 'wagmi';
+import { parseEther, formatUnits } from 'viem';
 
 import { ParaAgentWallet, x402Facilitator } from "@/utils";
 import Logo from "@/components/Logo";
 
 const MENTO_STABLES = [
-  { symbol: "USDm", name: "USA", rate: 1.0, flagUrl: "https://flagcdn.com/w40/us.png" },
+  { symbol: "USDm", name: "USA", rate: 1.0, flagUrl: "https://flagcdn.com/w40/us.png", address: "0x765DE816845861e75A25fCA122bb6898B8B1282a" },
   { symbol: "EURm", name: "Europe", rate: 0.91, flagUrl: "https://flagcdn.com/w40/eu.png" },
   { symbol: "KESm", name: "Kenya", rate: 129.5, flagUrl: "https://flagcdn.com/w40/ke.png" },
   { symbol: "BRLm", name: "Brazil", rate: 4.95, flagUrl: "https://flagcdn.com/w40/br.png" },
   { symbol: "COPm", name: "Colombia", rate: 3950.0, flagUrl: "https://flagcdn.com/w40/co.png" },
   { symbol: "GHSm", name: "Ghana", rate: 14.5, flagUrl: "https://flagcdn.com/w40/gh.png" },
   { symbol: "XOFm", name: "West Africa", rate: 600.0, flagUrl: "https://flagcdn.com/w40/sn.png" },
-  { symbol: "USDT", name: "Tether", rate: 1.0, flagUrl: "https://cryptologos.cc/logos/tether-usdt-logo.png" },
-  { symbol: "USDC", name: "USD Coin", rate: 1.0, flagUrl: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png" },
+  { symbol: "USDT", name: "Tether", rate: 1.0, flagUrl: "https://cryptologos.cc/logos/tether-usdt-logo.png", address: "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e" },
+  { symbol: "USDC", name: "USD Coin", rate: 1.0, flagUrl: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png", address: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C" },
 ];
 
 export default function SwapPage() {
+  const { address } = useAccount();
   const [amount, setAmount] = useState("100.00");
   const [sourceCurrency, setSourceCurrency] = useState(MENTO_STABLES[0]);
   const [targetCurrency, setTargetCurrency] = useState(MENTO_STABLES[1]); // default to KESm
@@ -36,6 +37,14 @@ export default function SwapPage() {
   const [recipientWallet, setRecipientWallet] = useState("");
   const [liveRates, setLiveRates] = useState<Record<string, number>>({});
   const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
+
+  const { data: sourceBalance } = useBalance({
+    address,
+    token: (sourceCurrency as any).address as `0x${string}` | undefined,
+    query: {
+      enabled: !!address && !!(sourceCurrency as any).address,
+    }
+  });
 
   const { sendTransactionAsync } = useSendTransaction();
 
@@ -262,6 +271,9 @@ export default function SwapPage() {
               </div>
             </div>
 
+            <p className="text-[10px] font-bold text-white/50 mb-3">
+              Balance: {sourceBalance ? parseFloat(formatUnits(sourceBalance.value, sourceBalance.decimals)).toFixed(2) : "0.00"} {sourceCurrency.symbol}
+            </p>
 
             <p className="text-[10px] font-bold text-[#2EE56B] uppercase tracking-widest mb-0 mt-2">Swap Amount</p>
             <input 
