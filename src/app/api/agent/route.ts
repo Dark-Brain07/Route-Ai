@@ -138,10 +138,14 @@ export async function POST(req: NextRequest) {
        // 5.c Sign and broadcast via Para Wallet
        console.log("Para Wallet Agent: Requesting MPC signature...");
        
+       // Get the active account from Para's provider
+       const [account] = await paraWalletClient.getAddresses();
+       
        // REAL ON-CHAIN EXECUTION:
        txHashOnChain = await paraWalletClient.sendTransaction({
+          account,
           to: MENTO_BROKER_ADDRESS as `0x${string}`,
-          value: 0n,
+          value: BigInt(0),
           // CRITICAL: We safely append the Attribution Tag to the end of the calldata!
           data: `${swapPayload}${attributionData.replace("0x", "")}` as `0x${string}`
        });
