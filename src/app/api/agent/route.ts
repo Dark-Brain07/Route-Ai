@@ -22,7 +22,7 @@ const MENTO_BROKER_ABI = [
 
 // --- x402 Micropayment Configuration ---
 const REQUIRED_FEE_USDM = 0.05; // The fee required to wake the Agent
-const AGENT_SMART_WALLET = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"; // Replace with real deployed Agent address
+const AGENT_SMART_WALLET = "0x000000000000000000000000000000000000dEaD"; // Replace with your real Para MPC address
 const ERC20_TRANSFER_EVENT = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 
 // Initialize Viem Client to verify transactions on the Celo blockchain

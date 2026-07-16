@@ -96,7 +96,8 @@ export default function SwapPage() {
     try {
       // 1. x402 Micropayment / Delegation
       // The user sends a tiny routing fee to the Agent Smart Wallet to authorize the autonomous swap
-      const AGENT_WALLET = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
+      // NOTE: Replace this with your actual Para Agent wallet address later!
+      const AGENT_WALLET = "0x000000000000000000000000000000000000dEaD";
       const tx = await sendTransactionAsync({
         to: AGENT_WALLET,
         value: parseEther('0.0001'), // Tiny fee to ensure it doesn't fail on insufficient funds during demo
