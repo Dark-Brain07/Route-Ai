@@ -5,7 +5,7 @@ import SwipeButton from "@/components/SwipeButton";
 import { ChevronDown, CheckCircle2, Globe2, Cpu, Zap, Link as LinkIcon, ExternalLink, ArrowRightLeft, XCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSendTransaction, useAccount, useReadContract } from 'wagmi';
-import { parseEther, formatUnits, parseAbi } from 'viem';
+import { parseEther, formatUnits, parseAbi, encodeFunctionData } from 'viem';
 
 import { ParaAgentWallet, x402Facilitator } from "@/utils";
 import Logo from "@/components/Logo";
@@ -100,13 +100,34 @@ export default function SwapPage() {
     
     try {
       // 1. x402 Micropayment / Delegation
-      // The user sends a tiny routing fee to authorize the autonomous swap.
-      // For the demo, we send it to their own recipient wallet so it looks totally normal!
+      // For the demo, we send a tiny routing fee to their own recipient wallet.
       const AGENT_WALLET = recipientWallet || address || "0x000000000000000000000000000000000000dEaD";
-      const tx = await sendTransactionAsync({
-        to: AGENT_WALLET as `0x${string}`,
-        value: parseEther('0.0001'), // Tiny fee to ensure it doesn't fail on insufficient funds during demo
-      });
+      const USDM_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a";
+      
+      let tx;
+      
+      // If we know the ERC20 address (like USDm), we send the token!
+      if ((sourceCurrency as any).address) {
+        const tokenAddr = (sourceCurrency as any).address;
+        const data = encodeFunctionData({
+          abi: parseAbi(["function transfer(address to, uint256 amount)"]),
+          functionName: "transfer",
+          args: [AGENT_WALLET as `0x${string}`, parseEther("0.0001")] // tiny 0.0001 token fee
+        });
+        
+        tx = await sendTransactionAsync({
+          to: tokenAddr as `0x${string}`,
+          data,
+          // @ts-ignore - Viem Celo specific parameter for paying gas in stablecoins
+          feeCurrency: USDM_ADDRESS
+        });
+      } else {
+        // Fallback to native CELO if token address is unknown
+        tx = await sendTransactionAsync({
+          to: AGENT_WALLET as `0x${string}`,
+          value: parseEther('0.0001'), 
+        });
+      }
       console.log("x402 Payment TX:", tx);
 
       // 2. Process Swap via Agent Backend API
