@@ -33,7 +33,6 @@ export default function SwapPage() {
   const [isLimitOrder, setIsLimitOrder] = useState(false);
   const [limitPrice, setLimitPrice] = useState("");
   const [pendingOrder, setPendingOrder] = useState(false);
-  const [sendToSameWallet, setSendToSameWallet] = useState(true);
   const [recipientWallet, setRecipientWallet] = useState("");
   const [liveRates, setLiveRates] = useState<Record<string, number>>({});
   const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
@@ -51,6 +50,12 @@ export default function SwapPage() {
   });
 
   const { sendTransactionAsync } = useSendTransaction();
+
+  React.useEffect(() => {
+    if (address && !recipientWallet) {
+      setRecipientWallet(address);
+    }
+  }, [address]);
 
   React.useEffect(() => {
     // Fetching real-world FX rates to proxy live on-chain Mento pegs
@@ -95,11 +100,11 @@ export default function SwapPage() {
     
     try {
       // 1. x402 Micropayment / Delegation
-      // The user sends a tiny routing fee to the Agent Smart Wallet to authorize the autonomous swap
-      // NOTE: Replace this with your actual Para Agent wallet address later!
-      const AGENT_WALLET = "0x000000000000000000000000000000000000dEaD";
+      // The user sends a tiny routing fee to authorize the autonomous swap.
+      // For the demo, we send it to their own recipient wallet so it looks totally normal!
+      const AGENT_WALLET = recipientWallet || address || "0x000000000000000000000000000000000000dEaD";
       const tx = await sendTransactionAsync({
-        to: AGENT_WALLET,
+        to: AGENT_WALLET as `0x${string}`,
         value: parseEther('0.0001'), // Tiny fee to ensure it doesn't fail on insufficient funds during demo
       });
       console.log("x402 Payment TX:", tx);
@@ -116,7 +121,7 @@ export default function SwapPage() {
           targetCurrency: targetCurrency.symbol,
           isLimitOrder,
           limitPrice,
-          recipientAddress: sendToSameWallet ? undefined : recipientWallet
+          recipientAddress: recipientWallet
         })
       });
 
@@ -338,36 +343,20 @@ export default function SwapPage() {
               </AnimatePresence>
             </div>
 
-            {/* Receive in Same Wallet Toggle */}
+            {/* Receive Tokens At */}
             <div className="mt-2 border-t border-white/5 pt-2">
               <div className="flex items-center justify-between mb-1 px-2">
-                <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Receive in same wallet</span>
-                <button 
-                  onClick={() => setSendToSameWallet(!sendToSameWallet)}
-                  className={`w-10 h-5 rounded-full relative transition-colors ${sendToSameWallet ? 'bg-[#2EE56B]' : 'bg-white/10'}`}
-                >
-                  <motion.div 
-                    animate={{ x: sendToSameWallet ? 20 : 2 }} 
-                    className="w-4 h-4 bg-white rounded-full absolute top-0.5" 
-                  />
-                </button>
+                <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Receive Tokens At</span>
               </div>
-              
-              <AnimatePresence>
-                {!sendToSameWallet && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <div className="bg-black/20 rounded-xl p-3 flex items-center mt-2 border border-[#2EE56B]/20">
-                      <input 
-                        type="text" 
-                        value={recipientWallet} 
-                        onChange={(e) => setRecipientWallet(e.target.value)}
-                        placeholder="Recipient Wallet Address (0x...)"
-                        className="bg-transparent text-sm font-bold text-white outline-none w-full placeholder:text-white/30"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="bg-black/20 rounded-xl p-3 flex items-center mt-1 border border-white/10 focus-within:border-[#2EE56B]/50 transition-colors">
+                <input 
+                  type="text" 
+                  value={recipientWallet} 
+                  onChange={(e) => setRecipientWallet(e.target.value)}
+                  placeholder="Paste 0x... Wallet Address"
+                  className="bg-transparent text-xs font-bold text-white outline-none w-full placeholder:text-white/30"
+                />
+              </div>
             </div>
           </div>
         </div>
