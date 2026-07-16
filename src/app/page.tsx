@@ -134,9 +134,9 @@ export default function DashboardPage() {
       <div className="flex-1 bg-[#0E291A] rounded-t-[40px] p-6 rounded-b-[40px] relative mb-4 mx-2 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col">
         
         {/* Wallet Circle Graphic */}
-        <div className="flex items-center gap-6 mb-10 mt-4">
-          <div className="w-24 h-24 rounded-full border-4 border-[#2EE56B] border-dashed flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(46,229,107,0.3)] bg-black/20">
-             <span className="text-xl font-black text-white">
+        <div className="flex items-center gap-6 mb-6 mt-2">
+          <div className="w-20 h-20 rounded-full border-4 border-[#2EE56B] border-dashed flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(46,229,107,0.3)] bg-black/20">
+             <span className="text-lg font-black text-white">
                 {isConnected && balanceData ? `${parseFloat(formatUnits(balanceData.value, balanceData.decimals)).toFixed(4)}` : "$0.00"}
              </span>
              {isConnected && balanceData && (
@@ -162,8 +162,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Services Grid */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-bold text-sm">Services</h3>
           </div>
           <div className="grid grid-cols-4 gap-3 bg-white rounded-3xl p-4 shadow-xl">
@@ -236,7 +236,7 @@ export default function DashboardPage() {
         {selectedMarket && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-black/80 flex items-end justify-center"
+            className="fixed inset-0 z-[100] bg-black/80 flex items-end justify-center sm:max-w-md sm:mx-auto"
           >
             <motion.div 
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
