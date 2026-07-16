@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import SwipeButton from "@/components/SwipeButton";
 import { ChevronDown, CheckCircle2, Globe2, Cpu, Zap, Link as LinkIcon, ExternalLink, ArrowRightLeft, XCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSendTransaction, useAccount, useBalance } from 'wagmi';
-import { parseEther, formatUnits } from 'viem';
+import { useSendTransaction, useAccount, useReadContract } from 'wagmi';
+import { parseEther, formatUnits, parseAbi } from 'viem';
 
 import { ParaAgentWallet, x402Facilitator } from "@/utils";
 import Logo from "@/components/Logo";
@@ -38,11 +38,15 @@ export default function SwapPage() {
   const [liveRates, setLiveRates] = useState<Record<string, number>>({});
   const [statusModal, setStatusModal] = useState<"success" | "error" | null>(null);
 
-  const { data: sourceBalance } = useBalance({
-    address,
-    token: (sourceCurrency as any).address as `0x${string}` | undefined,
+  const tokenAddress = (sourceCurrency as any).address as `0x${string}` | undefined;
+
+  const { data: sourceBalanceRaw } = useReadContract({
+    address: tokenAddress,
+    abi: parseAbi(["function balanceOf(address) view returns (uint256)"]),
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
     query: {
-      enabled: !!address && !!(sourceCurrency as any).address,
+      enabled: !!address && !!tokenAddress,
     }
   });
 
@@ -273,7 +277,7 @@ export default function SwapPage() {
             </div>
 
             <p className="text-[10px] font-bold text-white/50 mb-3">
-              Balance: {sourceBalance ? parseFloat(formatUnits(sourceBalance.value, sourceBalance.decimals)).toFixed(2) : "0.00"} {sourceCurrency.symbol}
+              Balance: {sourceBalanceRaw !== undefined ? parseFloat(formatUnits(sourceBalanceRaw as bigint, 18)).toFixed(2) : "0.00"} {sourceCurrency.symbol}
             </p>
 
             <p className="text-[10px] font-bold text-[#2EE56B] uppercase tracking-widest mb-0 mt-2">Swap Amount</p>
